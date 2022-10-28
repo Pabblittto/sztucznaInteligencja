@@ -14,7 +14,7 @@ import {
 import * as tf from "@tensorflow/tfjs";
 // File that contains helper methods for discretization
 
-import { Month, Day } from "../types/baseTypes";
+import { Month, Day } from "../../types/baseTypes";
 /**
  * WorkAround
  */

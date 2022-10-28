@@ -1,17 +1,27 @@
+import { DividerResult } from "./../../utils/datasetDivider";
 import * as tf from "@tensorflow/tfjs";
-import { DiscretizatedRowType } from "../../types/baseTypes";
 
-export const createNeuralNetworkModel = async (
-  data: tf.data.Dataset<DiscretizatedRowType>
-) => {
+export const createNeuralNetworkModel = async (numbOfClasses: number) => {
   const model = tf.sequential();
-  model.add(tf.layers.flatten({ inputShape: [12, 0] })); // First input layer
+  model.add(
+    tf.layers.dense({ inputShape: [12], units: 32, activation: "relu" })
+  ); // Second layer
+  model.add(tf.layers.dense({ units: 64, activation: "relu" })); // Second layer
   model.add(tf.layers.dense({ units: 32, activation: "relu" })); // Second layer
-  model.add(tf.layers.flatten({})); // Second layer
+  model.add(tf.layers.dense({ units: 12, activation: "relu" })); // Second layer
+  model.add(
+    tf.layers.dense({
+      units: 12,
+      batchSize: numbOfClasses,
+      activation: "softmax",
+    })
+  ); // Second layer
+
+  model.compile({
+    optimizer: "adam",
+    loss: "categoricalCrossentropy",
+  });
 
   model.summary();
-
-  model.compile();
-
-  //   await model.fit();
+  return model;
 };

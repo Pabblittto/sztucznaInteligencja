@@ -1,5 +1,5 @@
-import { Month, Day } from "./../types/baseTypes";
 import * as tf from "@tensorflow/tfjs";
+import { Day, Month } from "../../types/baseTypes";
 
 // FYI: need to use upperBound to make it work
 

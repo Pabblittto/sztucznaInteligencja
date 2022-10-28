@@ -1,3 +1,5 @@
+import { linearNormalizeFn } from "./../normalization/linear/index";
+import { expertNormalizeFn } from "./../normalization/expert/index";
 import {
   discMonth,
   discDay,
@@ -10,12 +12,35 @@ import {
   discRain,
   discTemp,
   discArea,
-} from "./../discretization/methods";
-import { DiscretizatedRowType } from "./../types/baseTypes";
-import { FFMCthresholds } from "./../discretization/values";
+} from "../normalization/expert/methods";
+import { DiscretizatedRowType } from "../types/baseTypes";
 import * as tf from "@tensorflow/tfjs";
 import { BaseRowType } from "../types/baseTypes";
 
+export enum NormalizationType {
+  EXPERT = "EXPERT",
+  LINEAR = "LINEAR",
+}
+
+/**
+ * Returns particular type of normalizing function based of passed type. Used for discretizing data.
+ * @param type
+ * @returns
+ */
+export const getNormalizingFunction = (type: NormalizationType) => {
+  switch (type) {
+    case NormalizationType.EXPERT:
+      return expertNormalizeFn;
+    case NormalizationType.LINEAR:
+      return linearNormalizeFn;
+    default:
+      throw "not supported normalizint func";
+  }
+};
+
+/**
+ * @deprecated do not use this
+ */
 export const discretization = async (data: tf.data.CSVDataset) => {
   const discreditedData = data.mapAsync(async (row) => {
     const typedRow: BaseRowType = row as BaseRowType;
