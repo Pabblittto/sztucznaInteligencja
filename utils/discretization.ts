@@ -36,19 +36,8 @@ export const discretization = async (data: tf.data.CSVDataset) => {
       area: await discArea(typedRow.area),
     };
 
-    // FFMC discretization:
-    const FFMCValue = tf.tensor1d([typedRow.FFMC]);
-    tf.upperBound(FFMCthresholds, FFMCValue);
-    // tf.lowerBound()
-
-    return typedRow;
+    return result;
   });
-
-  // const seq = tf.tensor1d([0, 76, 84, 8]);
-  // const values = tf.tensor([900]);
-
-  // const res = tf.upperBound(FFMCthresholds, values);
-  // console.log(Number(res.arraySync().toString()));
 
   return discreditedData;
 };

@@ -4,6 +4,12 @@ import {
   FFMCthresholds,
   DMCthresholds,
   DCthresholds,
+  ISIthresholds,
+  Tempthresholds,
+  RHthresholds,
+  Windthresholds,
+  Rainthresholds,
+  AreaThresholds,
 } from "./values";
 import * as tf from "@tensorflow/tfjs";
 // File that contains helper methods for discretization
@@ -44,9 +50,41 @@ export const discDC = async (DC: number) => {
 
   return tensorToNumber(res);
 };
-export const discISI = async (ISI: number) => {};
-export const discTemp = async (temp: number) => {};
-export const discRH = async (RH: number) => {};
-export const discWind = async (wind: number) => {};
-export const discRain = async (rain: number) => {};
-export const discArea = async (area: number) => {};
+export const discISI = async (ISI: number) => {
+  const ISIValue = tf.tensor1d([ISI]);
+  const res = tf.upperBound(ISIthresholds, ISIValue);
+
+  return tensorToNumber(res);
+};
+
+export const discTemp = async (temp: number) => {
+  const tempValue = tf.tensor1d([temp]);
+  const res = tf.upperBound(Tempthresholds, tempValue);
+
+  return tensorToNumber(res);
+};
+export const discRH = async (RH: number) => {
+  const RHValue = tf.tensor1d([RH]);
+  const res = tf.upperBound(RHthresholds, RHValue);
+
+  return tensorToNumber(res);
+};
+export const discWind = async (wind: number) => {
+  const WindValue = tf.tensor1d([wind]);
+  const res = tf.upperBound(Windthresholds, WindValue);
+
+  return tensorToNumber(res);
+};
+export const discRain = async (rain: number) => {
+  const RainValue = tf.tensor1d([rain]);
+  const res = tf.lowerBound(Rainthresholds, RainValue);
+
+  return tensorToNumber(res);
+};
+
+export const discArea = async (area: number) => {
+  const AreaValue = tf.tensor1d([area]);
+  const res = tf.lowerBound(AreaThresholds, AreaValue);
+
+  return tensorToNumber(res);
+};

@@ -2,9 +2,11 @@ import * as tf from "@tensorflow/tfjs";
 import * as fs from "fs/promises";
 import path from "path";
 import { discretization } from "./utils/discretization";
+import { saveDatasetAsCsv } from "./utils/saveDatasetAsCsv";
 
 async function main() {
-  const dataLocation = "file://" + __dirname + "\\data\\forestfires.csv";
+  const dataLocation = "file://" + __dirname + "/data/forestfires.csv"; // MAC OS
+  // const dataLocation = "file://" + __dirname + "\\data\\forestfires.csv"; // Windows
 
   const columnConfigs: {
     [key: string]: tf.data.ColumnConfig;
@@ -28,7 +30,10 @@ async function main() {
     columnConfigs: columnConfigs,
   });
 
-  discretization(csvDataset);
+  const cvsClearedData = await discretization(csvDataset);
+
+  // Save clear data to file
+  await saveDatasetAsCsv("cleared", cvsClearedData);
 }
 
 main();
