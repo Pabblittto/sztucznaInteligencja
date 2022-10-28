@@ -4,7 +4,7 @@ import path from "path";
 import { discretization } from "./utils/discretization";
 
 async function main() {
-  const dataLocation = "file://" + __dirname + "/data/forestfires.csv";
+  const dataLocation = "file://" + __dirname + "\\data\\forestfires.csv";
 
   const columnConfigs: {
     [key: string]: tf.data.ColumnConfig;

@@ -7,19 +7,20 @@ export enum Month {
   jun = "jun",
   jul = "jul",
   aug = "aug",
+  sep = "sep",
   oct = "oct",
   nov = "nov",
   dec = "dec",
 }
 
 export enum Day {
-  sun = "sun",
   mon = "mon",
   tue = "tue",
   wed = "wed",
   thu = "thu",
   fri = "fri",
   sat = "sat",
+  sun = "sun",
 }
 
 /**
@@ -30,6 +31,22 @@ export type BaseRowType = {
   Y: number;
   month: Month;
   day: Day;
+  FFMC: number;
+  DMC: number;
+  DC: number;
+  ISI: number;
+  temp: number;
+  RH: number;
+  wind: number;
+  rain: number;
+  area: number;
+};
+
+export type DiscretizatedRowType = {
+  X: number;
+  Y: number;
+  month: number;
+  day: number;
   FFMC: number;
   DMC: number;
   DC: number;
