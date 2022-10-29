@@ -6,6 +6,7 @@ import { createNeuralNetworkModel } from "./clasyficators/nauralNetwork";
 import { columnConfigs } from "./types/baseTypes";
 import { getNormalizingFunction, NormalizationType } from "./utils/normalize";
 import { saveDatasetAsCsv } from "./utils/saveDatasetAsCsv";
+import { getBatchSize } from "./utils/getBatchSize";
 
 async function main() {
   // SETTINGS ==================================================================
@@ -22,6 +23,8 @@ async function main() {
 
   const numbOfClasses = 5; // 5 number of calsses because ther is 5 types of area. See:  AreaThresholds
 
+  const batchSize: number | undefined = undefined; // Batch size, set to undefined if you want to use default batch size
+
   // SETTINGS =========================================================================
 
   // Prepare data:
@@ -32,6 +35,11 @@ async function main() {
     })
     .mapAsync(getNormalizingFunction(normalizeType));
 
+  const finalBatchSize = getBatchSize(
+    (await csvDataset.toArray()).length,
+    batchSize
+  );
+
   // TODO: zrobić pipeline
   // TODO: określić moze inne typy dyskretyzacji, na przykład liniowy podział zakresu, albo logarytmiczny
   // TODO:
@@ -41,22 +49,28 @@ async function main() {
   // Save clear data to file
   await saveDatasetAsCsv(`cleared_${normalizeType}`, csvDataset);
 
-  const dividedData = csvDataset.mapAsync(datasetDivider);
+  const dividedData = csvDataset.mapAsync(datasetDivider).batch(finalBatchSize);
 
   // Model creating
-  const model = await createNeuralNetworkModel(numbOfClasses);
+  const model = await createNeuralNetworkModel(numbOfClasses, finalBatchSize);
 
   // Training
-
-  model.fitDataset(dividedData, {
-    epochs: 10,
+  await model.fitDataset(dividedData, {
+    epochs: 200,
     verbose: 0,
     callbacks: {
       onEpochEnd(epoch, logs?) {
-        if (logs) console.log(`train-set loss: ${logs.loss.toFixed(4)}`);
+        if (logs) {
+          console.log(`==========`);
+          console.log(
+            `train-set, epoch: ${epoch} loss: ${logs.loss.toFixed(4)}`
+          );
+        }
       },
     },
   });
+
+  console.log(model.outputs);
 }
 
 main();

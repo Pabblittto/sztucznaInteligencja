@@ -14,7 +14,7 @@ export const datasetDivider = async (
 ): Promise<DividerResult> => {
   const typedRow: BaseRowType = row as BaseRowType;
 
-  const { area, ...d } = typedRow; // rozdziel zmienną decyzujną od raszy danych
+  const { area, ...d } = typedRow; // rozdziel zmienną decyzujną od reszty danych
 
   return {
     xs: tf.tensor([
