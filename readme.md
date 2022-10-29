@@ -5,6 +5,8 @@ Steps to run the project:
 2. npm run start
 ```
 
+Wytrenow3any model zostanie zapisany do folderu savedModels
+
 Szczegóły danych w folderze "dane"
 
 Tabela użyta do określenia progów podczas dyskretyzacji:

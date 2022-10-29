@@ -1,19 +1,25 @@
+import { Optimizer, LossFunction } from "./../../types/baseTypes";
 import { DividerResult } from "./../../utils/datasetDivider";
 import * as tf from "@tensorflow/tfjs";
 
 export const createNeuralNetworkModel = async (
   numbOfClasses: number,
-  batchSize: number
+  batchSize: number,
+  optimizer: Optimizer,
+  loss: LossFunction
 ) => {
   const model = tf.sequential();
   model.add(
     tf.layers.dense({
       inputShape: [12],
-      batchSize: batchSize,
+      batchSize: 1,
       units: 1,
       activation: "relu",
     })
   ); // Second layer
+  model.add(tf.layers.dense({ units: 24, activation: "relu" })); // Second layer
+  model.add(tf.layers.dense({ units: 64, activation: "relu" })); // Second layer
+  model.add(tf.layers.dense({ units: 32, activation: "relu" })); // Second layer
   model.add(tf.layers.dense({ units: 32, activation: "relu" })); // Second layer
   model.add(tf.layers.dense({ units: 12, activation: "relu" })); // Second layer
   model.add(
@@ -25,8 +31,9 @@ export const createNeuralNetworkModel = async (
   ); // Second layer
 
   model.compile({
-    optimizer: "adam",
-    loss: "meanSquaredError",
+    optimizer: optimizer,
+    loss: loss,
+    metrics: ["accuracy"],
   });
 
   model.summary();

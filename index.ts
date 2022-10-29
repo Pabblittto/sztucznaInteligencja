@@ -1,12 +1,11 @@
 import { datasetDivider } from "./utils/datasetDivider";
 import * as tf from "@tensorflow/tfjs";
-import * as fs from "fs/promises";
-import path from "path";
 import { createNeuralNetworkModel } from "./clasyficators/nauralNetwork";
-import { columnConfigs } from "./types/baseTypes";
+import { columnConfigs, Optimizer, LossFunction } from "./types/baseTypes";
 import { getNormalizingFunction, NormalizationType } from "./utils/normalize";
 import { saveDatasetAsCsv } from "./utils/saveDatasetAsCsv";
 import { getBatchSize } from "./utils/getBatchSize";
+import "tfjs-node-save"; // very important line!
 
 async function main() {
   // SETTINGS ==================================================================
@@ -16,6 +15,11 @@ async function main() {
       ? "file://" + __dirname + "\\data\\forestfires.csv"
       : "file://" + __dirname + "/data/forestfires.csv"; // DAta location link based on OS os Dev
 
+  const saveModelLocation =
+    process.platform === "win32"
+      ? "file://" + __dirname + "\\savedModels"
+      : "file://" + __dirname + "/savedModels"; // Direcotry path to place where created models are saved
+
   /**
    * Normalize type - define how data should be normalized
    */
@@ -23,7 +27,11 @@ async function main() {
 
   const numbOfClasses = 5; // 5 number of calsses because ther is 5 types of area. See:  AreaThresholds
 
-  const batchSize: number | undefined = undefined; // Batch size, set to undefined if you want to use default batch size
+  const batchSize: number | undefined = 32; // Batch size, set to undefined if you want to use default batch size
+  const epochs = 3000; // Number of learning times
+  // For Optimizer and Loss function see: https://www.tensorflow.org/js/guide/train_models#optimizer_loss_and_metric
+  const optimizer: Optimizer = Optimizer.adam;
+  const lossFunction: LossFunction = LossFunction.categoricalCrossentropy;
 
   // SETTINGS =========================================================================
 
@@ -49,28 +57,37 @@ async function main() {
   // Save clear data to file
   await saveDatasetAsCsv(`cleared_${normalizeType}`, csvDataset);
 
-  const dividedData = csvDataset.mapAsync(datasetDivider).batch(finalBatchSize);
+  const dividedData = csvDataset
+    .mapAsync((x) => datasetDivider(x, numbOfClasses))
+    .batch(finalBatchSize);
 
   // Model creating
-  const model = await createNeuralNetworkModel(numbOfClasses, finalBatchSize);
+  const model = await createNeuralNetworkModel(
+    numbOfClasses,
+    finalBatchSize,
+    optimizer,
+    lossFunction
+  );
 
-  // Training
+  //Training;
   await model.fitDataset(dividedData, {
-    epochs: 200,
+    epochs: epochs,
     verbose: 0,
     callbacks: {
       onEpochEnd(epoch, logs?) {
         if (logs) {
-          console.log(`==========`);
           console.log(
-            `train-set, epoch: ${epoch} loss: ${logs.loss.toFixed(4)}`
+            `Epoch: ${epoch}: loss: ${logs.loss.toFixed(
+              4
+            )},acc: ${logs.acc.toFixed(4)}  `
           );
         }
       },
     },
   });
 
-  console.log(model.outputs);
+  // Save created model
+  await model.save(saveModelLocation);
 }
 
 main();

@@ -5,12 +5,14 @@
   "main": "index.tx",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node ."
+    "train": "ts-node .",
+    "validate": "ts-node ./validateModel.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@tensorflow/tfjs": "^4.0.0",
+    "@tensorflow/tfjs-node": "^4.0.0",
+    "tfjs-node-save": "^0.0.2",
     "ts-node": "^10.9.1",
     "typescript": "^4.8.4"
   }

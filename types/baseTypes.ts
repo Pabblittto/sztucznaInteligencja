@@ -76,3 +76,13 @@ export const columnConfigs: {
   rain: { dtype: "float32" },
   area: { dtype: "float32" },
 };
+
+export enum Optimizer {
+  sgd = "sgd",
+  adam = "adam",
+}
+
+export enum LossFunction {
+  categoricalCrossentropy = "categoricalCrossentropy",
+  meanSquaredError = "meanSquaredError",
+}
