@@ -6,6 +6,7 @@ import { getNormalizingFunction, NormalizationType } from "./utils/normalize";
 import { saveDatasetAsCsv } from "./utils/saveDatasetAsCsv";
 import { getBatchSize } from "./utils/getBatchSize";
 import "tfjs-node-save"; // very important line!
+import { DuplicateDealer } from "./normalization/dublicates";
 
 async function main() {
   // SETTINGS ==================================================================
@@ -43,8 +44,12 @@ async function main() {
     })
     .mapAsync(getNormalizingFunction(normalizeType));
 
+  // remove duplicates
+  const duplicatesDealer = new DuplicateDealer();
+  const finalDataset = await duplicatesDealer.dealWithDuplicates(csvDataset);
+
   const finalBatchSize = getBatchSize(
-    (await csvDataset.toArray()).length,
+    (await finalDataset.toArray()).length,
     batchSize
   );
 
@@ -55,9 +60,9 @@ async function main() {
 
   // TODO: tu jakieś drzewa decysyjne + sieci neuronowe, jakieś pojebane coś
   // Save clear data to file
-  await saveDatasetAsCsv(`cleared_${normalizeType}`, csvDataset);
+  await saveDatasetAsCsv(`cleared_${normalizeType}`, finalDataset);
 
-  const dividedData = csvDataset
+  const dividedData = finalDataset
     .mapAsync((x) => datasetDivider(x, numbOfClasses))
     .batch(finalBatchSize);
 
