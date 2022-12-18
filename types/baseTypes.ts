@@ -44,6 +44,9 @@ export type BaseRowType = {
   area: number;
 };
 
+/**
+ * Row of discretizated data
+ */
 export type DiscretizatedRowType = {
   X: number;
   Y: number;
@@ -59,6 +62,21 @@ export type DiscretizatedRowType = {
   rain: number;
   area: number;
 };
+
+/**
+ * Row of data after discretization and correlated rows removal.
+ * Rows that were removed:
+ * - month - it correlates with a lot of other columns
+ * - FFMC
+ * - DMC
+ * - DC
+ * - ISI
+ *
+ */
+export type ClearedRowData = Omit<
+  DiscretizatedRowType,
+  "month" | "FFMC" | "DMC" | "DC" | "ISI"
+>;
 
 export const columnConfigs: {
   [key: string]: tf.data.ColumnConfig;

@@ -40,7 +40,7 @@ const main = async () => {
   const preparedData = await prepareTestInput(data, normalizationType);
   const testTensor = await datasetDivider(preparedData, numberOfClasses);
 
-  const result = model.predict(testTensor.xs.reshape([1, 12]));
+  const result = model.predict(testTensor.xs.reshape([1, 7]));
   console.log(result.toString());
 };
 

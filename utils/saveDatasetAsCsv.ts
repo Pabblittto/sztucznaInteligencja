@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as tf from "@tensorflow/tfjs";
-import { DiscretizatedRowType } from "../types/baseTypes";
+import { ClearedRowData } from "../types/baseTypes";
 
 /**
  * Saves dataset to csv file in "dane directory"
@@ -8,15 +8,14 @@ import { DiscretizatedRowType } from "../types/baseTypes";
  */
 export const saveDatasetAsCsv = async (
   destinationFileName: string,
-  data: tf.data.Dataset<DiscretizatedRowType>
+  data: tf.data.Dataset<ClearedRowData>
 ) => {
-  const fileName = process.cwd() + `/dane/${destinationFileName}.csv`;
+  const fileName = process.cwd() + `/output/${destinationFileName}.csv`;
 
   // Clear file
   fs.writeFileSync(fileName, "");
 
-  const headerDefinition =
-    "X,Y,month,day,FFMC,DMC,DC,ISI,temp,RH,wind,rain,area\n";
+  const headerDefinition = "X,Y,day,temp,RH,wind,rain,area\n";
 
   // write header line
   fs.appendFileSync(fileName, headerDefinition);
@@ -27,7 +26,7 @@ export const saveDatasetAsCsv = async (
   dataArray.forEach((e) => {
     fs.appendFileSync(
       fileName,
-      `${e.X},${e.Y},${e.month},${e.day},${e.FFMC},${e.DMC},${e.DC},${e.ISI},${e.temp},${e.RH},${e.wind},${e.rain},${e.area}\n`
+      `${e.X},${e.Y},${e.day},${e.temp},${e.RH},${e.wind},${e.rain},${e.area}\n`
     );
   });
 };

@@ -2,7 +2,7 @@ Steps to run the project:
 
 ```
 1. npm i
-2. npm run start
+2. npm run train
 ```
 
 Wytrenow3any model zostanie zapisany do folderu savedModels

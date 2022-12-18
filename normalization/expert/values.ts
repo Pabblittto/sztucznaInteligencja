@@ -119,6 +119,28 @@ export const Rainthresholds = tf.tensor1d([0, 1, 3, 6]);
 export const AreaThresholds = tf.tensor1d([0, 5, 20, 100]);
 
 /**
+ * Changes index of area type to readable label
+ * @param index
+ */
+export const fromAreaIndexToLabel = (index: number): string => {
+  switch (index) {
+    case 0:
+      return "no area";
+    case 1:
+      return "small area";
+    case 2:
+      return "medium area";
+    case 3:
+      return "big area";
+    case 4:
+      return "catastrofic area";
+
+    default:
+      throw "Should never happen";
+  }
+};
+
+/**
  * Maps day to proper number
  * @param day
  * @returns

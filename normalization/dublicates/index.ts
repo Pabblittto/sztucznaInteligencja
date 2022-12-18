@@ -1,5 +1,5 @@
 import * as tf from "@tensorflow/tfjs";
-import { DiscretizatedRowType } from "../../types/baseTypes";
+import { ClearedRowData } from "../../types/baseTypes";
 
 export class DuplicateDealer {
   hashedDataList: string[] = [];
@@ -8,8 +8,8 @@ export class DuplicateDealer {
    * Removed duplicates from data
    * @param data Data
    */
-  dealWithDuplicates = async (data: tf.data.Dataset<DiscretizatedRowType>) => {
-    const result: DiscretizatedRowType[] = [];
+  dealWithDuplicates = async (data: tf.data.Dataset<ClearedRowData>) => {
+    const result: ClearedRowData[] = [];
     const nonProcessedData = await data.toArray();
 
     nonProcessedData.forEach((row) => {

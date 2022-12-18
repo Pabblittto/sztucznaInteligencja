@@ -1,16 +1,20 @@
 import { datasetDivider } from "./utils/datasetDivider";
 import * as tf from "@tensorflow/tfjs";
-import { createNeuralNetworkModel } from "./clasyficators/nauralNetwork";
+import {
+  createNeuralNetworkModel,
+  validateModel,
+} from "./clasyficators/nauralNetwork";
 import { columnConfigs, Optimizer, LossFunction } from "./types/baseTypes";
 import { getNormalizingFunction, NormalizationType } from "./utils/normalize";
 import { saveDatasetAsCsv } from "./utils/saveDatasetAsCsv";
 import { getBatchSize } from "./utils/getBatchSize";
 import "tfjs-node-save"; // very important line!
 import { DuplicateDealer } from "./normalization/dublicates";
+import { correlatedRowRemover } from "./normalization/corelatedRowRemover";
+import { createErrorMatrixFile } from "./utils/createErrorMatrixFile";
 
 async function main() {
   // SETTINGS ==================================================================
-
   const dataLocation =
     process.platform === "win32"
       ? "file://" + __dirname + "\\data\\forestfires.csv"
@@ -21,6 +25,8 @@ async function main() {
       ? "file://" + __dirname + "\\savedModels"
       : "file://" + __dirname + "/savedModels"; // Direcotry path to place where created models are saved
 
+  const saveErrorMatrixFileName = "errorMatrix.html"; // File name of error matrix file
+
   /**
    * Normalize type - define how data should be normalized
    */
@@ -29,11 +35,10 @@ async function main() {
   const numbOfClasses = 5; // 5 number of calsses because ther is 5 types of area. See:  AreaThresholds
 
   const batchSize: number | undefined = 32; // Batch size, set to undefined if you want to use default batch size
-  const epochs = 3000; // Number of learning times
+  const epochs = 5000; // Number of learning times
   // For Optimizer and Loss function see: https://www.tensorflow.org/js/guide/train_models#optimizer_loss_and_metric
-  const optimizer: Optimizer = Optimizer.adam;
+  const optimizer: Optimizer = Optimizer.sgd;
   const lossFunction: LossFunction = LossFunction.categoricalCrossentropy;
-
   // SETTINGS =========================================================================
 
   // Prepare data:
@@ -42,23 +47,22 @@ async function main() {
       hasHeader: true,
       columnConfigs: columnConfigs,
     })
-    .mapAsync(getNormalizingFunction(normalizeType));
+    .mapAsync(getNormalizingFunction(normalizeType)) //! NORMALIZATION
+    .mapAsync(correlatedRowRemover); //! DELETE MOST CORRELATED ROWS
 
-  // remove duplicates
-  const duplicatesDealer = new DuplicateDealer();
-  const finalDataset = await duplicatesDealer.dealWithDuplicates(csvDataset);
+  const finalDataset = await new DuplicateDealer().dealWithDuplicates(
+    csvDataset
+  ); //! DELETE DUPLICATES
 
   const finalBatchSize = getBatchSize(
     (await finalDataset.toArray()).length,
     batchSize
   );
 
-  // TODO: zrobić pipeline
-  // TODO: określić moze inne typy dyskretyzacji, na przykład liniowy podział zakresu, albo logarytmiczny
-  // TODO:
-  // trzeba sprawdzić czy nie ma dublikatów tzn. wierszy o takich samych wartościach, ale o innej wartości zmiennej decyzyjnej
-
-  // TODO: tu jakieś drzewa decysyjne + sieci neuronowe, jakieś pojebane coś
+  // TODO: grid search - to jest wane
+  // TODO: DODAĆ KNN klasyfikator,
+  // TODO: tu jakieś drzewa decysyjne + sieci neuronowe, knn neighbours
+  // TODO: zrobic oversampling dla tych mało licznych danych
   // Save clear data to file
   await saveDatasetAsCsv(`cleared_${normalizeType}`, finalDataset);
 
@@ -84,12 +88,20 @@ async function main() {
           console.log(
             `Epoch: ${epoch}: loss: ${logs.loss.toFixed(
               4
-            )},acc: ${logs.acc.toFixed(4)}  `
+            )},acc: ${logs.acc.toFixed(4)}`
           );
         }
       },
     },
   });
+
+  // Validate model and create ErrorMatrix
+  const validationResult = await validateModel(
+    model,
+    finalDataset,
+    numbOfClasses
+  );
+  createErrorMatrixFile(saveErrorMatrixFileName, validationResult);
 
   // Save created model
   await model.save(saveModelLocation);
