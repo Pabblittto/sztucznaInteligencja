@@ -12,6 +12,7 @@ import "tfjs-node-save"; // very important line!
 import { DuplicateDealer } from "./normalization/dublicates";
 import { correlatedRowRemover } from "./normalization/corelatedRowRemover";
 import { createErrorMatrixFile } from "./utils/createErrorMatrixFile";
+import { ReasampleTool } from "./normalization/reasampleTool";
 
 async function main() {
   // SETTINGS ==================================================================
@@ -50,9 +51,15 @@ async function main() {
     .mapAsync(getNormalizingFunction(normalizeType)) //! NORMALIZATION
     .mapAsync(correlatedRowRemover); //! DELETE MOST CORRELATED ROWS
 
-  const finalDataset = await new DuplicateDealer().dealWithDuplicates(
+  const clearedData = await new DuplicateDealer().dealWithDuplicates(
     csvDataset
   ); //! DELETE DUPLICATES
+
+  const finalDataset = await ReasampleTool.reasample(
+    clearedData,
+    100,
+    numbOfClasses
+  ); // ! REBALANCING DATASET
 
   const finalBatchSize = getBatchSize(
     (await finalDataset.toArray()).length,
@@ -61,7 +68,6 @@ async function main() {
 
   // TODO: grid search - to jest wane
   // TODO: DODAĆ KNN klasyfikator,
-  // TODO: tu jakieś drzewa decysyjne + sieci neuronowe, knn neighbours
   // TODO: zrobic oversampling dla tych mało licznych danych
   // Save clear data to file
   await saveDatasetAsCsv(`cleared_${normalizeType}`, finalDataset);

@@ -1,7 +1,7 @@
 import * as tf from "@tensorflow/tfjs";
 import "tfjs-node-save"; // very important line!
 import { prepareTestInput } from "./utils/prepareTestInput";
-import { BaseRowType, Day, Month } from "./types/baseTypes";
+import { BaseRowType, ClearedRowData, Day, Month } from "./types/baseTypes";
 import { datasetDivider } from "./utils/datasetDivider";
 import { NormalizationType } from "./utils/normalize";
 
@@ -38,7 +38,19 @@ const main = async () => {
   const model = await tf.loadLayersModel(modelLocation);
 
   const preparedData = await prepareTestInput(data, normalizationType);
-  const testTensor = await datasetDivider(preparedData, numberOfClasses);
+
+  const asd: ClearedRowData = {
+    X: 4,
+    Y: 5,
+    day: 6,
+    temp: 1,
+    RH: 2,
+    wind: 2,
+    rain: 0,
+    area: 4,
+  };
+
+  const testTensor = await datasetDivider(asd, numberOfClasses);
 
   const result = model.predict(testTensor.xs.reshape([1, 7]));
   console.log(result.toString());
