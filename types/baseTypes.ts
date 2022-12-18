@@ -98,6 +98,8 @@ export const columnConfigs: {
 export enum Optimizer {
   sgd = "sgd",
   adam = "adam",
+  adagrad = "adagrad",
+  rmsprop = "rmsprop",
 }
 
 export enum LossFunction {

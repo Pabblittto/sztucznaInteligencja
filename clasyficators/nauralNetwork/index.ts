@@ -24,9 +24,8 @@ export const createNeuralNetworkModel = async (
   ); // Second layer
   model.add(tf.layers.dense({ units: 14, activation: "relu" })); // Second layer
   model.add(tf.layers.dense({ units: 28, activation: "relu" })); // Second layer
+  model.add(tf.layers.dense({ units: 58, activation: "relu" })); // Second layer
   model.add(tf.layers.dense({ units: 28, activation: "relu" })); // Second layer
-  model.add(tf.layers.dense({ units: 14, activation: "relu" })); // Second layer
-  model.add(tf.layers.dense({ units: 7, activation: "relu" })); // Second layer
   model.add(
     tf.layers.dense({
       units: numbOfClasses,
@@ -79,10 +78,11 @@ export const validateModel = async (
 
   predictArgs.forEach((row) => {
     const realGroupIndex = defineTheLargestValueInArray(row.ys.arraySync());
+
     const prediction = model.predict(row.xs.reshape([1, 7]));
     if (!Array.isArray(prediction)) {
       const predictedGroupIndex = defineTheLargestValueInArray(
-        prediction.arraySync() as number[]
+        (prediction.arraySync() as number[][])[0]
       );
       result[realGroupIndex][predictedGroupIndex] += 1;
     } else {

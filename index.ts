@@ -35,11 +35,11 @@ async function main() {
 
   const numbOfClasses = 5; // 5 number of calsses because ther is 5 types of area. See:  AreaThresholds
 
-  const batchSize: number | undefined = 32; // Batch size, set to undefined if you want to use default batch size
-  const epochs = 5000; // Number of learning times
+  const batchSize: number | undefined = undefined; // Batch size, set to undefined if you want to use default batch size
+  const epochs = 3000; // Number of learning times
   // For Optimizer and Loss function see: https://www.tensorflow.org/js/guide/train_models#optimizer_loss_and_metric
-  const optimizer: Optimizer = Optimizer.sgd;
-  const lossFunction: LossFunction = LossFunction.categoricalCrossentropy;
+  const optimizer: Optimizer = Optimizer.rmsprop;
+  const lossFunction: LossFunction = LossFunction.meanSquaredError;
   // SETTINGS =========================================================================
 
   // Prepare data:
@@ -57,7 +57,7 @@ async function main() {
 
   const finalDataset = await ReasampleTool.reasample(
     clearedData,
-    100,
+    120,
     numbOfClasses
   ); // ! REBALANCING DATASET
 
@@ -67,8 +67,7 @@ async function main() {
   );
 
   // TODO: grid search - to jest wane
-  // TODO: DODAĆ KNN klasyfikator,
-  // TODO: zrobic oversampling dla tych mało licznych danych
+  // TODO: DODAĆ KNN klasyfikator
   // Save clear data to file
   await saveDatasetAsCsv(`cleared_${normalizeType}`, finalDataset);
 
@@ -104,7 +103,7 @@ async function main() {
   // Validate model and create ErrorMatrix
   const validationResult = await validateModel(
     model,
-    finalDataset,
+    clearedData,
     numbOfClasses
   );
   createErrorMatrixFile(saveErrorMatrixFileName, validationResult);
