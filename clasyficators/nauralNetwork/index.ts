@@ -11,7 +11,9 @@ export const createNeuralNetworkModel = async (
   numbOfClasses: number,
   batchSize: number,
   optimizer: Optimizer,
-  loss: LossFunction
+  loss: LossFunction,
+  numbOfInternalLayers: number,
+  activationFn: "relu" | "sigmoid" | "tanh"
 ) => {
   const model = tf.sequential();
   model.add(
@@ -22,10 +24,13 @@ export const createNeuralNetworkModel = async (
       activation: "relu",
     })
   ); // Second layer
+  model.add(tf.layers.dense({ units: 14, activation: "tanh" })); // Second layer
+  for (let i = 1; i <= numbOfInternalLayers; i++) {
+    model.add(
+      tf.layers.dense({ units: 14 * i + 14, activation: activationFn })
+    ); // Second layer
+  }
   model.add(tf.layers.dense({ units: 14, activation: "relu" })); // Second layer
-  model.add(tf.layers.dense({ units: 28, activation: "relu" })); // Second layer
-  model.add(tf.layers.dense({ units: 58, activation: "relu" })); // Second layer
-  model.add(tf.layers.dense({ units: 28, activation: "relu" })); // Second layer
   model.add(
     tf.layers.dense({
       units: numbOfClasses,

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.tx",
+  "types": ".",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "train": "ts-node .",
@@ -13,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@tensorflow/tfjs-node": "^4.0.0",
+    "hyperparameters": "^0.25.6",
     "simple-statistics": "^7.8.0",
     "tfjs-node-save": "^0.0.2",
     "ts-node": "^10.9.1",
