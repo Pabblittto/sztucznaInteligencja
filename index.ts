@@ -38,7 +38,7 @@ async function main() {
   const numbOfClasses = 5; // 5 number of calsses because ther is 5 types of area. See:  AreaThresholds
 
   const batchSize: number | undefined = undefined; // Batch size, set to undefined if you want to use default batch size
-  const epochs = 10; // Number of learning times
+  const epochs = 6000; // Number of learning times
   // SETTINGS =========================================================================
 
   // Prepare data:
@@ -89,7 +89,7 @@ async function main() {
       LossFunction.categoricalCrossentropy,
       LossFunction.meanSquaredError,
     ]),
-    numbOfInternalLayers: hpjs.choice([1, 2, 3, 4]),
+    numbOfInternalLayers: hpjs.choice([1, 2, 3, 4, 5]),
     activationFn: hpjs.choice(["relu", "sigmoid", "tanh"]),
   };
 
