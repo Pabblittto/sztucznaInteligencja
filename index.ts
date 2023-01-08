@@ -1,4 +1,4 @@
-import { datasetDivider } from "./utils/datasetDivider";
+import { divideDataset } from "./utils/datasetDivider";
 import * as tf from "@tensorflow/tfjs";
 import {
   createNeuralNetworkModel,
@@ -8,12 +8,18 @@ import { columnConfigs, Optimizer, LossFunction } from "./types/baseTypes";
 import { getNormalizingFunction, NormalizationType } from "./utils/normalize";
 import { saveDatasetAsCsv } from "./utils/saveDatasetAsCsv";
 import { getBatchSize } from "./utils/getBatchSize";
-import "tfjs-node-save"; // very important line!
 import { DuplicateDealer } from "./normalization/dublicates";
 import { correlatedRowRemover } from "./normalization/corelatedRowRemover";
 import { createErrorMatrixFile } from "./utils/createErrorMatrixFile";
 import { ReasampleTool } from "./normalization/reasampleTool";
 import { saveResults } from "./utils/saveBestResults";
+import {
+  createKnnClasifier,
+  divideDataIntoTrainingAndTestingSets,
+  validateKnnClasifier,
+} from "./clasyficators/knnClasifier";
+import "tfjs-node-save"; // very important line!
+
 const hpjs = require("hyperparameters");
 
 async function main() {
@@ -64,15 +70,32 @@ async function main() {
     (await finalDataset.toArray()).length,
     batchSize
   );
+  // KNN Clasifier //// //////////////////////////
+  const trainingPercentage = 75;
 
-  // TODO: DODAĆ KNN klasyfikator
+  const knnDividedData = await divideDataIntoTrainingAndTestingSets(
+    clearedData,
+    trainingPercentage,
+    numbOfClasses
+  );
+
+  const knnClasifier = await createKnnClasifier(
+    knnDividedData.training,
+    numbOfClasses
+  );
+
+  await validateKnnClasifier(
+    knnClasifier,
+    knnDividedData.testing,
+    numbOfClasses,
+    2
+  );
+
+  return;
   // Save clear data to file
   await saveDatasetAsCsv(`cleared_${normalizeType}`, finalDataset);
 
-  const dividedData = await finalDataset
-    .mapAsync((x) => datasetDivider(x, numbOfClasses))
-    .toArray();
-
+  const dividedData = await divideDataset(finalDataset, numbOfClasses);
   const xs = dividedData.map((d) => d.xs);
   const ys = dividedData.map((d) => d.ys);
 

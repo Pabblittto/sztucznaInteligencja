@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tensorflow-models/knn-classifier": "^1.2.4",
     "@tensorflow/tfjs-node": "^4.0.0",
     "hyperparameters": "^0.25.6",
     "simple-statistics": "^7.8.0",

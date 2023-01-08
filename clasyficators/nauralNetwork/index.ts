@@ -6,6 +6,7 @@ import {
   ClearedRowData,
 } from "./../../types/baseTypes";
 import * as tf from "@tensorflow/tfjs";
+import { ErrorMatrixCreator } from "../utils/matrixErrorCreator";
 
 export const createNeuralNetworkModel = async (
   numbOfClasses: number,
@@ -52,7 +53,7 @@ export const createNeuralNetworkModel = async (
 /**
  * Returns index of cell where was the largest number was contained
  */
-const defineTheLargestValueInArray = (array: number[]) => {
+export const defineTheLargestValueInArray = (array: number[]) => {
   let maxIndex = 0;
   let max = 0;
   array.forEach((val, index) => {
@@ -69,11 +70,7 @@ export const validateModel = async (
   dataSet: tf.data.Dataset<ClearedRowData>,
   numberOfClasses: number
 ): Promise<EntireDatasetValidationResult> => {
-  const result: EntireDatasetValidationResult = new Array(5);
-
-  for (let i = 0; i < result.length; i++) {
-    result[i] = new Array(5).fill(0);
-  }
+  const errorMatrix = new ErrorMatrixCreator(5);
 
   const arrayData = (await dataSet.toArray()).map(
     async (x) => await datasetDivider(x, numberOfClasses)
@@ -89,14 +86,14 @@ export const validateModel = async (
       const predictedGroupIndex = defineTheLargestValueInArray(
         (prediction.arraySync() as number[][])[0]
       );
-      result[realGroupIndex][predictedGroupIndex] += 1;
+      errorMatrix.increaseaCell(realGroupIndex, predictedGroupIndex);
     } else {
       throw "Shouldn't get here";
     }
   });
   console.log("===================");
   console.log("Error Matrix:");
-  console.log(result);
+  console.log(errorMatrix.result);
 
-  return result;
+  return errorMatrix.result;
 };

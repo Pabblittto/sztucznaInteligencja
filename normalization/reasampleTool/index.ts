@@ -23,7 +23,7 @@ export class ReasampleTool {
     // Do the reasampling  (will do oversalmpling if there is few elements, and undersampling when there is too many elements)
 
     sortedData.forEach((sortedRow) => {
-      const tmpAggregateArray = [];
+      const tmpAggregateArray: ClearedRowData[] = [];
 
       while (tmpAggregateArray.length != sampleSize) {
         if (sortedRow.length >= sampleSize) {

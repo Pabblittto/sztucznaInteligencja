@@ -12,14 +12,14 @@ import {
   discArea,
 } from "./methods";
 import { BaseRowType, DiscretizatedRowType } from "../../types/baseTypes";
-import * as tf from "@tensorflow/tfjs";
+import { TensorContainer } from "@tensorflow/tfjs";
 
 /**
  * Function for normalizing rows
  * @param row Row
  * @returns normalized row
  */
-export const expertNormalizeFn = async (row: tf.TensorContainer) => {
+export const expertNormalizeFn = async (row: TensorContainer) => {
   const typedRow: BaseRowType = row as BaseRowType;
 
   const result: DiscretizatedRowType = {

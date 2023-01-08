@@ -28,3 +28,10 @@ export const datasetDivider = async (
     ys: tf.tensor<tf.Rank.R1>(zeros.map((z, i) => (i === area ? 1 : 0))), // Creates One-hot array, so if array is "small", the output is: [0,1,0,0,0]
   };
 };
+
+export const divideDataset = async (
+  dataset: tf.data.Dataset<ClearedRowData>,
+  numbOfClasses: number
+): Promise<DividerResult[]> => {
+  return dataset.mapAsync((x) => datasetDivider(x, numbOfClasses)).toArray();
+};
